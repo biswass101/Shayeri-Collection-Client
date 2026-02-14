@@ -93,8 +93,41 @@ export const adminApi = baseApi.injectEndpoints({
       }),
       transformResponse: (response: { success: boolean; data?: any }) => response.data,
     }),
+    createCategory: builder.mutation<
+      { success: boolean; data?: unknown },
+      { name: string; slug: string; description?: string }
+    >({
+      query: ({ name, slug, description }) => ({
+        url: "/api/categories",
+        method: "post",
+        data: { name, slug, description },
+      }),
+    }),
+    updateCategory: builder.mutation<
+      { success: boolean; data?: unknown },
+      { id: string; name?: string; slug?: string; description?: string }
+    >({
+      query: ({ id, ...payload }) => ({
+        url: `/api/categories/${id}`,
+        method: "put",
+        data: payload,
+      }),
+    }),
+    deleteCategory: builder.mutation<{ success: boolean }, string>({
+      query: (id) => ({
+        url: `/api/categories/${id}`,
+        method: "delete",
+      }),
+    }),
   }),
 });
 
-export const { useUploadVideoMutation, useUpdateVideoMutation, useDeleteVideoMutation, useGetDashboardQuery } =
-  adminApi;
+export const {
+  useUploadVideoMutation,
+  useUpdateVideoMutation,
+  useDeleteVideoMutation,
+  useGetDashboardQuery,
+  useCreateCategoryMutation,
+  useUpdateCategoryMutation,
+  useDeleteCategoryMutation,
+} = adminApi;

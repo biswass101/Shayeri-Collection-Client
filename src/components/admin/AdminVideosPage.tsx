@@ -67,8 +67,8 @@ export default function AdminVideosPage() {
       </div>
 
       {showForm ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <Card className="w-full max-w-3xl rounded-2xl border border-border bg-card p-4 shadow-lg">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 sm:p-4">
+          <Card className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-border bg-card p-4 shadow-lg">
             <div className="mb-4 flex items-center justify-between">
               <div className="text-sm font-semibold">
                 {editingId ? "Edit Video" : "Add Video"}
@@ -158,7 +158,7 @@ export default function AdminVideosPage() {
                   Published
                 </label>
               </div>
-              <div className="md:col-span-2 flex gap-2">
+              <div className="md:col-span-2 flex flex-wrap gap-2">
                 <Button
                   className="gap-2"
                   disabled={uploadState.isLoading || updateState.isLoading}
@@ -244,16 +244,16 @@ export default function AdminVideosPage() {
       ) : null}
 
       {confirmDelete ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 sm:p-4">
           <Card className="w-full max-w-md rounded-2xl border border-border bg-card p-4 shadow-lg">
             <div className="mb-3 text-sm font-semibold">Delete video?</div>
             <p className="text-xs text-muted-foreground">
               Are you sure you want to delete “{confirmDelete.title}”? This action cannot be undone.
             </p>
-            <div className="mt-4 flex gap-2">
+            <div className="mt-4 flex flex-wrap gap-2">
               <Button
-                className="gap-2"
-                variant="destructive"
+                variant="outline"
+                className="gap-2 border-destructive text-destructive hover:bg-destructive/10"
                 disabled={deleteState.isLoading}
                 onClick={async () => {
                   try {

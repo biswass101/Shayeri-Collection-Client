@@ -297,7 +297,7 @@ export default function VideoPlayerPage({ video, isAuthenticated, onBack }: Vide
 
   return (
     <div className="mt-6 space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <Button variant="ghost" size="sm" onClick={onBack}>
           Back to Home
         </Button>
@@ -538,7 +538,7 @@ export default function VideoPlayerPage({ video, isAuthenticated, onBack }: Vide
         </Card>
       </div>
 
-      <div className="rounded-2xl border border-border bg-card p-4">
+      <div className="rounded-2xl border border-border bg-card p-3 sm:p-4">
         <div className="text-sm font-semibold">More Videos</div>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {(allVideos ?? [])

@@ -10,11 +10,11 @@ export default function AdminShell() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="grid min-h-screen grid-cols-[256px_1fr]">
+      <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[256px_1fr]">
         <AdminSidebar />
-        <div className="px-6 py-5">
-          <header className="mb-5 flex items-center justify-between rounded-xl bg-card px-4 py-3 shadow-sm ring-1 ring-border/40">
-            <div className="flex items-center gap-3">
+        <div className="px-3 py-4 sm:px-4 lg:px-6 lg:py-5">
+          <header className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-card px-3 py-3 shadow-sm ring-1 ring-border/40 sm:px-4">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <Link
                 to="/"
                 className={cn(
@@ -25,7 +25,7 @@ export default function AdminShell() {
                 <Home size={16} className="mr-2" />
                 Client Home
               </Link>
-              <div className="rounded-full border border-border bg-background px-4 py-1 text-sm font-semibold">
+              <div className="rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold sm:px-4 sm:text-sm">
                 Admin Control Center
               </div>
             </div>

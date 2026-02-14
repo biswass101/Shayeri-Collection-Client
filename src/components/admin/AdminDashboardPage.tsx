@@ -172,7 +172,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-5">
         {statItems.map((item) => (
           <Card key={item.label} className="rounded-xl border border-border bg-card p-3 shadow-sm">
             <div className="flex items-center justify-between text-xs uppercase tracking-wide text-muted-foreground">
@@ -248,7 +248,8 @@ export default function AdminDashboardPage() {
               <AlertTriangle className="h-3.5 w-3.5" />
               System Actions (Realtime)
             </div>
-            <div className="divide-y divide-border">
+            <div className="overflow-x-auto">
+              <div className="min-w-[620px] divide-y divide-border">
               {activityRows.map((row) => (
                 <div key={`${row.action}-${row.time}`} className="grid grid-cols-[1.5fr_1.4fr_1fr_1fr] px-3 py-2 text-xs">
                   <span>{row.action}</span>
@@ -267,6 +268,7 @@ export default function AdminDashboardPage() {
                   </span>
                 </div>
               ))}
+              </div>
             </div>
           </div>
         </Card>

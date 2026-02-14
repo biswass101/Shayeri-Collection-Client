@@ -10,7 +10,7 @@ export default function DownloadsPage() {
 
   return (
     <div className="mt-6 space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="text-lg font-semibold">Downloads</h2>
           <p className="text-sm text-muted-foreground">

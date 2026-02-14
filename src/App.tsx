@@ -14,6 +14,7 @@ import AdminRoute from "@/components/layout/AdminRoute";
 import AdminShell from "@/components/admin/AdminShell";
 import AdminDashboardPage from "@/components/admin/AdminDashboardPage";
 import AdminVideosPage from "@/components/admin/AdminVideosPage";
+import AdminCategoriesPage from "@/components/admin/AdminCategoriesPage";
 
 export default function App() {
   return (
@@ -61,6 +62,7 @@ export default function App() {
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboardPage />} />
               <Route path="videos" element={<AdminVideosPage />} />
+              <Route path="categories" element={<AdminCategoriesPage />} />
             </Route>
           </Routes>
         </BrowserRouter>

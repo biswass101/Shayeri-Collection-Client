@@ -136,6 +136,7 @@ export const homeApi = baseApi.injectEndpoints({
           id: String(category.id),
           name: category.name,
           slug: category.slug,
+          description: category.description ?? null,
         })),
     }),
     getVideos: builder.query<Video[], void>({

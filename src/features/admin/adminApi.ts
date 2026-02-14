@@ -32,7 +32,69 @@ export const adminApi = baseApi.injectEndpoints({
         };
       },
     }),
+    updateVideo: builder.mutation<
+      { success: boolean; data?: unknown },
+      {
+        id: string;
+        title: string;
+        description: string;
+        categoryId: string;
+        isPublished: boolean;
+        videoFile?: File | null;
+        thumbnailFile?: File | null;
+      }
+    >({
+      query: ({ id, title, description, categoryId, isPublished, videoFile, thumbnailFile }) => {
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("description", description);
+        formData.append("categoryId", categoryId);
+        formData.append("isPublished", String(isPublished));
+        if (videoFile) {
+          formData.append("video", videoFile);
+        }
+        if (thumbnailFile) {
+          formData.append("thumbnail", thumbnailFile);
+        }
+
+        return {
+          url: `/api/videos/${id}`,
+          method: "put",
+          data: formData,
+          headers: { "Content-Type": "multipart/form-data" },
+        };
+      },
+    }),
+    deleteVideo: builder.mutation<{ success: boolean }, string>({
+      query: (id) => ({
+        url: `/api/videos/${id}`,
+        method: "delete",
+      }),
+    }),
+    getDashboard: builder.query<
+      {
+        totals: {
+          uploads: number;
+          users: number;
+          comments: number;
+          shares: number;
+          downloads: number;
+          alerts: number;
+        };
+        trends: { labels: string[]; shares: number[]; downloads: number[] };
+        categories: Array<{ label: string; value: number }>;
+        engagement: { likes: number; shares: number; comments: number; downloads: number };
+      },
+      void
+    >({
+      query: () => ({
+        url: "/api/admin/dashboard",
+        method: "get",
+      }),
+      transformResponse: (response: { success: boolean; data?: any }) => response.data,
+    }),
   }),
 });
 
-export const { useUploadVideoMutation } = adminApi;
+export const { useUploadVideoMutation, useUpdateVideoMutation, useDeleteVideoMutation, useGetDashboardQuery } =
+  adminApi;

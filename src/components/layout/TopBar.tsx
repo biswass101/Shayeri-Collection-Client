@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useUI } from "@/components/layout/UIContext";
+import { useGetNotificationsQuery, useMarkNotificationReadMutation } from "@/features/notifications/notificationApi";
 import { Bell, Moon, Search, Sun } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 type TopBarProps = {
   searchValue: string;
@@ -12,11 +15,27 @@ type TopBarProps = {
 
 export default function TopBar({ searchValue, onSearchChange, isDark, onToggleTheme }: TopBarProps) {
   const [showNotifications, setShowNotifications] = useState(false);
-  const notifications = [
-    "Your playlist “Late Night Sayeri” is trending.",
-    "New uploads from Sayeri Originals.",
-    "Weekly recap is ready to watch.",
-  ];
+  const { isAuthenticated, setAuthOpen } = useUI();
+  const navigate = useNavigate();
+  const { data: notifications = [], isLoading, isError } = useGetNotificationsQuery(undefined, {
+    skip: !isAuthenticated,
+  });
+  const [markRead] = useMarkNotificationReadMutation();
+
+  const unreadCount = useMemo(
+    () => notifications.filter((note) => !note.isRead).length,
+    [notifications]
+  );
+
+  const handleNotificationClick = async (note: (typeof notifications)[number]) => {
+    if (!note.isRead) {
+      await markRead(note.id);
+    }
+    if (note.videoId) {
+      navigate(`/watch/${note.videoId}`);
+    }
+    setShowNotifications(false);
+  };
 
   return (
     <div className="content-top">
@@ -36,19 +55,41 @@ export default function TopBar({ searchValue, onSearchChange, isDark, onToggleTh
           size="icon"
           className="notification-button"
           aria-label="Notifications"
-          onClick={() => setShowNotifications((prev) => !prev)}
+          onClick={() => {
+            if (!isAuthenticated) {
+              setAuthOpen(true);
+              return;
+            }
+            setShowNotifications((prev) => !prev);
+          }}
         >
           <Bell size={18} />
-          <span className="notification-dot" />
+          {unreadCount > 0 ? <span className="notification-dot" /> : null}
         </Button>
         {showNotifications ? (
           <div className="notification-panel">
             <div className="notification-title">Notifications</div>
-            <ul className="notification-list">
-              {notifications.map((note) => (
-                <li key={note}>{note}</li>
-              ))}
-            </ul>
+            {isLoading ? (
+              <div className="notification-empty">Loading notifications...</div>
+            ) : isError ? (
+              <div className="notification-empty">Could not load notifications.</div>
+            ) : notifications.length === 0 ? (
+              <div className="notification-empty">No notifications yet.</div>
+            ) : (
+              <ul className="notification-list">
+                {notifications.map((note) => (
+                  <li
+                    key={note.id}
+                    className={`notification-item${note.isRead ? "" : " unread"}`}
+                    onClick={() => handleNotificationClick(note)}
+                  >
+                    <div className="notification-item-title">{note.title}</div>
+                    {note.body ? <div className="notification-item-body">{note.body}</div> : null}
+                    <div className="notification-meta">{note.time}</div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         ) : null}
       </div>

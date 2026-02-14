@@ -21,10 +21,13 @@ type VideoItem = {
     name: string;
     slug: string;
   } | null;
+  isPublished?: boolean | null;
   thumbnailUrl?: string | null;
   durationSeconds?: number | null;
   viewsCount?: number | null;
   likesCount?: number | null;
+  sharesCount?: number | null;
+  downloadsCount?: number | null;
   createdAt?: string;
   videoUrl?: string | null;
   hlsUrl?: string | null;
@@ -95,6 +98,7 @@ const formatRelative = (isoDate?: string) => {
 const mapVideo = (video: VideoItem): Video => ({
   id: String(video.id),
   title: video.title,
+  description: video.description ?? undefined,
   subtitle: video.description ?? `${video.category?.name ?? "Video"} · Sayeri`,
   thumbnailLabel: video.category?.name ?? "Video",
   categoryId: String(video.categoryId),
@@ -106,6 +110,9 @@ const mapVideo = (video: VideoItem): Video => ({
   hlsUrl: video.hlsUrl ?? undefined,
   videoUrl: video.videoUrl ?? undefined,
   likesCount: video.likesCount ?? 0,
+  sharesCount: video.sharesCount ?? 0,
+  downloadsCount: video.downloadsCount ?? 0,
+  isPublished: video.isPublished ?? undefined,
 });
 
 const mapComment = (comment: CommentEntity): CommentItem => ({
@@ -138,6 +145,13 @@ export const homeApi = baseApi.injectEndpoints({
         params: { limit: 50 },
       }),
       transformResponse: (response: VideosResponse) => response.data.map(mapVideo),
+      providesTags: (result) =>
+        result
+          ? [
+              { type: "Videos" as const, id: "LIST" },
+              ...result.map((video) => ({ type: "Videos" as const, id: video.id })),
+            ]
+          : [{ type: "Videos" as const, id: "LIST" }],
     }),
     getVideoById: builder.query<Video | null, string>({
       query: (id) => ({
@@ -146,6 +160,7 @@ export const homeApi = baseApi.injectEndpoints({
       }),
       transformResponse: (response: { success: boolean; data?: VideoItem }) =>
         response?.data ? mapVideo(response.data) : null,
+      providesTags: (_result, _error, id) => [{ type: "Videos" as const, id }],
     }),
     incrementVideoView: builder.mutation<{ success: boolean; data?: { id: number; viewsCount: number } }, string>({
       query: (id) => ({
@@ -209,6 +224,60 @@ export const homeApi = baseApi.injectEndpoints({
         method: "delete",
       }),
     }),
+    shareVideo: builder.mutation<{ success: boolean }, { id: string; channel: string }>({
+      query: ({ id, channel }) => ({
+        url: `/api/videos/${id}/share`,
+        method: "post",
+        data: { channel },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "Videos" as const, id },
+        { type: "Videos" as const, id: "LIST" },
+      ],
+    }),
+    downloadVideo: builder.mutation<{ success: boolean; data?: { downloadUrl: string } }, string>({
+      query: (id) => ({
+        url: `/api/videos/${id}/download`,
+        method: "get",
+      }),
+      transformResponse: (response: { success: boolean; data?: { downloadUrl: string } }) => response,
+      invalidatesTags: (_result, _error, id) => [
+        { type: "Videos" as const, id },
+        { type: "Videos" as const, id: "LIST" },
+      ],
+    }),
+    getShareTotal: builder.query<number, string>({
+      query: (videoId) => ({
+        url: "/api/shares/total",
+        method: "get",
+        params: { videoId },
+      }),
+      transformResponse: (response: { success: boolean; data?: { total?: number } }) =>
+        response?.data?.total ?? 0,
+    }),
+    getDownloadTotal: builder.query<number, string>({
+      query: (videoId) => ({
+        url: "/api/downloads/total",
+        method: "get",
+        params: { videoId },
+      }),
+      transformResponse: (response: { success: boolean; data?: { total?: number } }) =>
+        response?.data?.total ?? 0,
+    }),
+    getUserDownloads: builder.query<
+      Array<{
+        id: number;
+        downloadedAt: string;
+        video: { id: number; title: string; description?: string | null; thumbnailUrl?: string | null };
+      }>,
+      void
+    >({
+      query: () => ({
+        url: "/api/downloads",
+        method: "get",
+      }),
+      transformResponse: (response: { success: boolean; data?: any[] }) => response.data ?? [],
+    }),
   }),
 });
 
@@ -224,4 +293,9 @@ export const {
   useAddCommentMutation,
   useUpdateCommentMutation,
   useDeleteCommentMutation,
+  useShareVideoMutation,
+  useDownloadVideoMutation,
+  useGetShareTotalQuery,
+  useGetDownloadTotalQuery,
+  useGetUserDownloadsQuery,
 } = homeApi;

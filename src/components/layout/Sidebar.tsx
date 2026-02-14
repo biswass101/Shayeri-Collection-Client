@@ -66,25 +66,33 @@ export default function Sidebar({ onToggle, collapsed = true, onAuthClick }: Sid
         ))}
       </nav>
 
-      <div className="sidebar-auth">
-        <div className="auth-bubble">
-          <User size={16} />
+      <div className="mt-auto rounded-xl bg-background p-3 shadow-sm ring-1 ring-border/40">
+        <div className="flex items-center gap-2">
+          <div className="grid h-8 w-8 place-items-center rounded-full bg-foreground text-background">
+            <User size={14} />
+          </div>
+          <div className="min-w-0">
+            <div className="truncate text-sm font-semibold">{user?.name ?? "Guest"}</div>
+            <div className="text-xs text-muted-foreground">{user?.email ?? "Not signed in"}</div>
+          </div>
         </div>
-        <div className="auth-actions">
-          <Button variant="ghost" size="sm" className="auth-text" onClick={onAuthClick}>
-            {user?.name ?? "Authenticate"}
+        {user ? (
+          <Button
+            onClick={clearAuthSession}
+            variant="outline"
+            className="mt-3 h-8 w-full border-border bg-background text-xs text-foreground"
+          >
+            Logout
           </Button>
-          {user ? (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="auth-logout"
-              onClick={clearAuthSession}
-            >
-              Logout
-            </Button>
-          ) : null}
-        </div>
+        ) : (
+          <Button
+            onClick={onAuthClick}
+            variant="outline"
+            className="mt-3 h-8 w-full border-border bg-background text-xs text-foreground"
+          >
+            Authenticate
+          </Button>
+        )}
       </div>
     </aside>
   );

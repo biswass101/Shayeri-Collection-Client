@@ -7,6 +7,7 @@ type UIContextValue = {
   authOpen: boolean;
   setAuthOpen: (open: boolean) => void;
   isAuthenticated: boolean;
+  authReady: boolean;
   setAuthSession: (user: AuthUser, token: string) => void;
   clearAuthSession: () => void;
   user: AuthUser | null;
@@ -20,6 +21,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   const [isDark, setIsDark] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [authReady, setAuthReady] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   useEffect(() => {
@@ -30,6 +32,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const storedToken = localStorage.getItem("sayeri_token");
     const storedUser = localStorage.getItem("sayeri_user");
+    const storedSidebar = localStorage.getItem("sayeri_sidebar_collapsed");
     if (storedToken && storedUser) {
       try {
         setUser(JSON.parse(storedUser));
@@ -37,6 +40,10 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem("sayeri_user");
       }
     }
+    if (storedSidebar !== null) {
+      setSidebarCollapsed(storedSidebar === "true");
+    }
+    setAuthReady(true);
   }, []);
 
   const value = useMemo(
@@ -46,6 +53,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
       authOpen,
       setAuthOpen,
       isAuthenticated: Boolean(user),
+      authReady,
       user,
       setAuthSession: (nextUser: AuthUser, token: string) => {
         localStorage.setItem("sayeri_token", token);
@@ -58,7 +66,12 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
         setUser(null);
       },
       sidebarCollapsed,
-      toggleSidebar: () => setSidebarCollapsed((prev) => !prev),
+      toggleSidebar: () =>
+        setSidebarCollapsed((prev) => {
+          const next = !prev;
+          localStorage.setItem("sayeri_sidebar_collapsed", String(next));
+          return next;
+        }),
     }),
     [isDark, authOpen, user, sidebarCollapsed]
   );

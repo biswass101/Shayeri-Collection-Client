@@ -14,6 +14,10 @@ import {
   useUpdateCommentMutation,
   useDeleteCommentMutation,
   useGetVideosQuery,
+  useShareVideoMutation,
+  useDownloadVideoMutation,
+  useGetShareTotalQuery,
+  useGetDownloadTotalQuery,
 } from "@/features/home/homeApi";
 import { useUI } from "@/components/layout/UIContext";
 import { useToast } from "@/components/ui/use-toast";
@@ -32,6 +36,8 @@ export default function VideoPlayerPage({ video, isAuthenticated, onBack }: Vide
   const [unlikeVideo] = useUnlikeVideoMutation();
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(video.likesCount ?? 0);
+  const [sharesCount, setSharesCount] = useState(video.sharesCount ?? 0);
+  const [downloadsCount, setDownloadsCount] = useState(video.downloadsCount ?? 0);
   const [commentBody, setCommentBody] = useState("");
   const [replyToId, setReplyToId] = useState<string | null>(null);
   const [replyBody, setReplyBody] = useState("");
@@ -47,6 +53,28 @@ export default function VideoPlayerPage({ video, isAuthenticated, onBack }: Vide
   const [updateComment, updateCommentState] = useUpdateCommentMutation();
   const [deleteComment, deleteCommentState] = useDeleteCommentMutation();
   const { data: allVideos } = useGetVideosQuery();
+  const [shareVideo, shareState] = useShareVideoMutation();
+  const [downloadVideo, downloadState] = useDownloadVideoMutation();
+  const { data: totalShares, refetch: refetchTotalShares } = useGetShareTotalQuery(video.id);
+  const { data: totalDownloads, refetch: refetchTotalDownloads } = useGetDownloadTotalQuery(video.id);
+
+  const persistDownload = () => {
+    const entry = {
+      id: video.id,
+      title: video.title,
+      subtitle: video.subtitle,
+      thumbnailUrl: video.thumbnailUrl,
+      downloadedAt: new Date().toISOString(),
+    };
+    try {
+      const raw = localStorage.getItem("sayeri_downloads");
+      const existing = raw ? JSON.parse(raw) : [];
+      const filtered = Array.isArray(existing) ? existing.filter((item) => item.id !== video.id) : [];
+      localStorage.setItem("sayeri_downloads", JSON.stringify([entry, ...filtered]));
+    } catch {
+      // Ignore storage errors
+    }
+  };
 
   useEffect(() => {
     const element = videoRef.current;
@@ -86,6 +114,14 @@ export default function VideoPlayerPage({ video, isAuthenticated, onBack }: Vide
   useEffect(() => {
     setLikesCount(video.likesCount ?? 0);
   }, [video.likesCount]);
+
+  useEffect(() => {
+    setSharesCount(video.sharesCount ?? 0);
+  }, [video.sharesCount]);
+
+  useEffect(() => {
+    setDownloadsCount(video.downloadsCount ?? 0);
+  }, [video.downloadsCount]);
 
   const handleAddReply = async (parentId: string) => {
     if (!replyBody.trim()) return;
@@ -335,11 +371,113 @@ export default function VideoPlayerPage({ video, isAuthenticated, onBack }: Vide
                 <Heart size={16} className={isLiked ? "fill-current" : ""} /> Like
                 <span className="text-xs text-muted-foreground">{likesCount}</span>
               </Button>
-              <Button variant="secondary" size="sm" className="gap-2">
-                <Share2 size={16} /> Share
-              </Button>
-              <Button variant="secondary" size="sm" className="gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="gap-2"
+                disabled={downloadState.isLoading}
+                onClick={async () => {
+                  if (!isAuthenticated) {
+                    setAuthOpen(true);
+                    addToast({
+                      title: "Sign in required",
+                      description: "Please sign in to download.",
+                    });
+                    return;
+                  }
+
+                  try {
+                    const response = await downloadVideo(video.id).unwrap();
+                    const downloadUrl = response?.data?.downloadUrl;
+                    if (!downloadUrl) {
+                      throw new Error("Missing download URL");
+                    }
+                    const link = document.createElement("a");
+                    link.href = downloadUrl;
+                    link.target = "_blank";
+                    link.rel = "noopener noreferrer";
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    persistDownload();
+                    setDownloadsCount((prev) => prev + 1);
+                    refetchTotalDownloads();
+                    addToast({
+                      title: "Download started",
+                      description: "Your download is being prepared.",
+                    });
+                  } catch (error) {
+                    addToast({
+                      title: "Download failed",
+                      description: "Please try again.",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+              >
                 <Download size={16} /> Download
+                <span className="text-xs text-muted-foreground">
+                  {typeof totalDownloads === "number" ? totalDownloads : downloadsCount}
+                </span>
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="gap-2"
+                disabled={shareState.isLoading}
+                onClick={async () => {
+                  if (!isAuthenticated) {
+                    setAuthOpen(true);
+                    addToast({
+                      title: "Sign in required",
+                      description: "Please sign in to share.",
+                    });
+                    return;
+                  }
+
+                  const shareUrl = `${window.location.origin}/watch/${video.id}`;
+                  const useNative = typeof navigator !== "undefined" && "share" in navigator;
+                  const channel = useNative ? "native" : "copy_link";
+
+                  try {
+                    await shareVideo({ id: video.id, channel }).unwrap();
+                    setSharesCount((prev) => prev + 1);
+                    refetchTotalShares();
+                    if (useNative) {
+                      await (navigator as Navigator).share({
+                        title: video.title,
+                        text: video.subtitle,
+                        url: shareUrl,
+                      });
+                      addToast({
+                        title: "Shared",
+                        description: "Thanks for sharing!",
+                      });
+                    } else if (navigator.clipboard?.writeText) {
+                      await navigator.clipboard.writeText(shareUrl);
+                      addToast({
+                        title: "Link copied",
+                        description: "Share link copied to clipboard.",
+                      });
+                    } else {
+                      addToast({
+                        title: "Share ready",
+                        description: shareUrl,
+                      });
+                    }
+                  } catch (error) {
+                    addToast({
+                      title: "Share failed",
+                      description: "Please try again.",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+              >
+                <Share2 size={16} /> Share
+                <span className="text-xs text-muted-foreground">
+                  {typeof totalShares === "number" ? totalShares : sharesCount}
+                </span>
               </Button>
             </div>
           </div>

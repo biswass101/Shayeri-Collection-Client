@@ -4,12 +4,16 @@ import { useUI } from "@/components/layout/UIContext";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function AdminRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, user, setAuthOpen } = useUI();
+  const { isAuthenticated, user, setAuthOpen, authReady } = useUI();
   const { addToast } = useToast();
 
   const isAdmin = user?.role === "admin";
 
   useEffect(() => {
+    if (!authReady) {
+      return;
+    }
+
     if (!isAuthenticated) {
       setAuthOpen(true);
       return;
@@ -22,7 +26,11 @@ export default function AdminRoute({ children }: { children: React.ReactNode }) 
         variant: "destructive",
       });
     }
-  }, [isAuthenticated, isAdmin, setAuthOpen, addToast]);
+  }, [authReady, isAuthenticated, isAdmin, setAuthOpen, addToast]);
+
+  if (!authReady) {
+    return null;
+  }
 
   if (!isAuthenticated || !isAdmin) {
     return <Navigate to="/" replace />;

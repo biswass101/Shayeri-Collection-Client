@@ -3,13 +3,17 @@ import { useEffect } from "react";
 import { useUI } from "@/components/layout/UIContext";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, setAuthOpen } = useUI();
+  const { isAuthenticated, setAuthOpen, authReady } = useUI();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (authReady && !isAuthenticated) {
       setAuthOpen(true);
     }
-  }, [isAuthenticated, setAuthOpen]);
+  }, [authReady, isAuthenticated, setAuthOpen]);
+
+  if (!authReady) {
+    return null;
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;

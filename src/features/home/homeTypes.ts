@@ -7,6 +7,7 @@ export type Category = {
 export type Video = {
   id: string;
   title: string;
+  description?: string;
   subtitle: string;
   thumbnailLabel: string;
   categoryId: string;
@@ -18,6 +19,9 @@ export type Video = {
   hlsUrl?: string;
   videoUrl?: string;
   likesCount?: number;
+  sharesCount?: number;
+  downloadsCount?: number;
+  isPublished?: boolean;
 };
 
 export type CommentItem = {

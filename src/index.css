@@ -315,11 +315,45 @@ body {
   color: hsl(var(--muted-foreground));
 }
 
-.notification-list li {
+.notification-list li,
+.notification-item {
   border-radius: 10px;
   padding: 8px;
   background: hsl(var(--secondary));
   color: hsl(var(--foreground));
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.notification-item:hover {
+  transform: translateY(-1px);
+  background: hsl(var(--accent));
+}
+
+.notification-item.unread {
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+}
+
+.notification-item-title {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.notification-item-body {
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 4px;
+}
+
+.notification-meta {
+  font-size: 0.7rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.notification-empty {
+  font-size: 0.8rem;
+  color: hsl(var(--muted-foreground));
+  padding: 8px;
 }
 
 .theme-toggle {

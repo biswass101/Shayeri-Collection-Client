@@ -15,7 +15,7 @@ export default function AdminVideosPage() {
   const { addToast } = useToast();
   const { isAuthenticated } = useUI();
   const { data: categories } = useGetCategoriesQuery();
-  const { data: videos, refetch } = useGetVideosQuery();
+  const { data: videos, refetch, isLoading: isVideosLoading } = useGetVideosQuery();
   const [uploadVideo, uploadState] = useUploadVideoMutation();
   const [updateVideo, updateState] = useUpdateVideoMutation();
   const [deleteVideo, deleteState] = useDeleteVideoMutation();
@@ -341,7 +341,11 @@ export default function AdminVideosPage() {
           />
         </div>
       ) : (
-        <VideoGrid videos={videos ?? []} onSelect={(video) => setSelectedVideo(video)} />
+        <VideoGrid
+          videos={videos ?? []}
+          onSelect={(video) => setSelectedVideo(video)}
+          isLoading={isVideosLoading}
+        />
       )}
     </div>
   );

@@ -35,9 +35,15 @@ export const axiosBaseQuery =
       return { data: result.data };
     } catch (axiosError) {
       const err = axiosError as AxiosError;
+      const status = err.response?.status;
+      if (status === 401) {
+        localStorage.removeItem("sayeri_token");
+        localStorage.removeItem("sayeri_user");
+        window.dispatchEvent(new CustomEvent("sayeri:auth-expired"));
+      }
       return {
         error: {
-          status: err.response?.status,
+          status,
           data: err.response?.data ?? err.message,
         } satisfies AxiosBaseQueryError,
       };

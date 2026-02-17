@@ -30,7 +30,7 @@ const slugify = (value: string) =>
 
 export default function AdminCategoriesPage() {
   const { addToast } = useToast();
-  const { data: categories = [], refetch } = useGetCategoriesQuery();
+  const { data: categories = [], refetch, isLoading } = useGetCategoriesQuery();
   const [createCategory, createState] = useCreateCategoryMutation();
   const [updateCategory, updateState] = useUpdateCategoryMutation();
   const [deleteCategory, deleteState] = useDeleteCategoryMutation();
@@ -239,48 +239,63 @@ export default function AdminCategoriesPage() {
         </div>
       ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {sortedCategories.map((category) => (
-          <Card key={category.id} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <div className="text-sm font-semibold">{category.name}</div>
-                <div className="text-xs text-muted-foreground">/{category.slug}</div>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" aria-busy={isLoading}>
+        {isLoading
+          ? Array.from({ length: 6 }, (_, index) => (
+              <div key={`category-skeleton-${index}`} className="admin-category-skeleton-card">
+                <div className="admin-category-skeleton-head">
+                  <div className="admin-category-skeleton-title skeleton" />
+                  <div className="admin-category-skeleton-slug skeleton" />
+                </div>
+                <div className="admin-category-skeleton-actions">
+                  <div className="admin-category-skeleton-action skeleton" />
+                  <div className="admin-category-skeleton-action skeleton" />
+                </div>
+                <div className="admin-category-skeleton-desc skeleton" />
+                <div className="admin-category-skeleton-desc skeleton short" />
               </div>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 gap-2 rounded-full px-3 text-xs"
-                  onClick={() => {
-                    setEditingId(category.id);
-                    setFormState({
-                      name: category.name,
-                      slug: category.slug,
-                      description: category.description ?? "",
-                    });
-                    setShowForm(true);
-                  }}
-                >
-                  <Pencil size={14} />
-                  Edit
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 gap-2 rounded-full px-3 text-xs text-destructive hover:text-destructive"
-                  onClick={() => setConfirmDelete({ id: category.id, name: category.name })}
-                >
-                  <Trash2 size={14} />
-                  Delete
-                </Button>
-              </div>
-            </div>
-            <p className="mt-3 text-xs text-muted-foreground">
-              {category.description ?? "No description provided."}
-            </p>
-          </Card>
-        ))}
+            ))
+          : sortedCategories.map((category) => (
+              <Card key={category.id} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <div className="text-sm font-semibold">{category.name}</div>
+                    <div className="text-xs text-muted-foreground">/{category.slug}</div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 gap-2 rounded-full px-3 text-xs"
+                      onClick={() => {
+                        setEditingId(category.id);
+                        setFormState({
+                          name: category.name,
+                          slug: category.slug,
+                          description: category.description ?? "",
+                        });
+                        setShowForm(true);
+                      }}
+                    >
+                      <Pencil size={14} />
+                      Edit
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 gap-2 rounded-full px-3 text-xs text-destructive hover:text-destructive"
+                      onClick={() => setConfirmDelete({ id: category.id, name: category.name })}
+                    >
+                      <Trash2 size={14} />
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+                <p className="mt-3 text-xs text-muted-foreground">
+                  {category.description ?? "No description provided."}
+                </p>
+              </Card>
+            ))}
       </div>
     </div>
   );

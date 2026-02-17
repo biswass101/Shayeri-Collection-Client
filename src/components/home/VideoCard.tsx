@@ -8,7 +8,7 @@ type VideoCardProps = {
 
 export default function VideoCard({ video, onSelect }: VideoCardProps) {
   return (
-    <Card className="video-card cursor-pointer h-[300px]" onClick={() => onSelect(video)}>
+    <Card className="video-card cursor-pointer min-h-[320px] overflow-hidden" onClick={() => onSelect(video)}>
       <CardContent className="video-card-body flex h-full flex-col gap-3">
         <div className="relative h-40 w-full overflow-hidden rounded-xl bg-muted">
           {video.thumbnailUrl ? (

@@ -46,6 +46,18 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
     setAuthReady(true);
   }, []);
 
+  useEffect(() => {
+    const handleAuthExpired = () => {
+      localStorage.removeItem("sayeri_token");
+      localStorage.removeItem("sayeri_user");
+      setUser(null);
+    };
+    window.addEventListener("sayeri:auth-expired", handleAuthExpired);
+    return () => {
+      window.removeEventListener("sayeri:auth-expired", handleAuthExpired);
+    };
+  }, []);
+
   const value = useMemo(
     () => ({
       isDark,

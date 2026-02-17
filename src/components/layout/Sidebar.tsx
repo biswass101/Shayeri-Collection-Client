@@ -9,6 +9,8 @@ import {
   Home,
   LayoutGrid,
   User,
+  LogIn,
+  LogOut,
 } from "lucide-react";
 
 type SidebarProps = {
@@ -67,31 +69,62 @@ export default function Sidebar({ onToggle, collapsed = true, onAuthClick }: Sid
       </nav>
 
       <div className="mt-auto rounded-xl bg-background p-3 shadow-sm ring-1 ring-border/40">
-        <div className="flex items-center gap-2">
-          <div className="grid h-8 w-8 place-items-center rounded-full bg-foreground text-background">
-            <User size={14} />
+        {collapsed ? (
+          <div className="flex flex-col items-center gap-2">
+            <div className="grid h-8 w-8 place-items-center rounded-full bg-foreground text-background">
+              <User size={14} />
+            </div>
+            {user ? (
+              <Button
+                onClick={clearAuthSession}
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 border-border bg-background text-foreground"
+                aria-label="Sign out"
+              >
+                <LogOut size={14} />
+              </Button>
+            ) : (
+              <Button
+                onClick={onAuthClick}
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 border-border bg-background text-foreground"
+                aria-label="Sign in"
+              >
+                <LogIn size={14} />
+              </Button>
+            )}
           </div>
-          <div className="min-w-0">
-            <div className="truncate text-sm font-semibold">{user?.name ?? "Guest"}</div>
-            <div className="text-xs text-muted-foreground">{user?.email ?? "Not signed in"}</div>
-          </div>
-        </div>
-        {user ? (
-          <Button
-            onClick={clearAuthSession}
-            variant="outline"
-            className="mt-3 h-8 w-full border-border bg-background text-xs text-foreground"
-          >
-            Logout
-          </Button>
         ) : (
-          <Button
-            onClick={onAuthClick}
-            variant="outline"
-            className="mt-3 h-8 w-full border-border bg-background text-xs text-foreground"
-          >
-            Authenticate
-          </Button>
+          <>
+            <div className="flex items-center gap-2">
+              <div className="grid h-8 w-8 place-items-center rounded-full bg-foreground text-background">
+                <User size={14} />
+              </div>
+              <div className="min-w-0">
+                <div className="truncate text-sm font-semibold">{user?.name ?? "Guest"}</div>
+                <div className="text-xs text-muted-foreground">{user?.email ?? "Not signed in"}</div>
+              </div>
+            </div>
+            {user ? (
+              <Button
+                onClick={clearAuthSession}
+                variant="outline"
+                className="mt-3 h-8 w-full border-border bg-background text-xs text-foreground"
+              >
+                Logout
+              </Button>
+            ) : (
+              <Button
+                onClick={onAuthClick}
+                variant="outline"
+                className="mt-3 h-8 w-full border-border bg-background text-xs text-foreground"
+              >
+                Authenticate
+              </Button>
+            )}
+          </>
         )}
       </div>
     </aside>

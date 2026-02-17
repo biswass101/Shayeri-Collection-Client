@@ -37,6 +37,12 @@ export default function TopBar({ searchValue, onSearchChange, isDark, onToggleTh
     setShowNotifications(false);
   };
 
+  const handleMarkRead = async (note: (typeof notifications)[number]) => {
+    if (!note.isRead) {
+      await markRead(note.id);
+    }
+  };
+
   return (
     <div className="content-top">
       <div className="search-bar">
@@ -85,7 +91,19 @@ export default function TopBar({ searchValue, onSearchChange, isDark, onToggleTh
                   >
                     <div className="notification-item-title">{note.title}</div>
                     {note.body ? <div className="notification-item-body">{note.body}</div> : null}
-                    <div className="notification-meta">{note.time}</div>
+                    <div className="notification-item-footer">
+                      <div className="notification-meta">{note.time}</div>
+                      <button
+                        type="button"
+                        className="notification-mark"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleMarkRead(note);
+                        }}
+                      >
+                        {note.isRead ? "Read" : "Mark as read"}
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>

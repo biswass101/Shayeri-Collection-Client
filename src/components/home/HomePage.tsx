@@ -7,8 +7,8 @@ import { useGetCategoriesQuery, useGetVideosQuery } from "@/features/home/homeAp
 import { useUI } from "@/components/layout/UIContext";
 
 export default function HomePage() {
-  const { data: categoriesData } = useGetCategoriesQuery();
-  const { data: videosData } = useGetVideosQuery();
+  const { data: categoriesData, isLoading: isCategoriesLoading } = useGetCategoriesQuery();
+  const { data: videosData, isLoading: isVideosLoading } = useGetVideosQuery();
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useUI();
   const [searchValue, setSearchValue] = useState("");
@@ -45,8 +45,13 @@ export default function HomePage() {
         categories={categories}
         selectedCategory={selectedCategory}
         onSelect={(value) => setSelectedCategory(value === "all" ? "all" : value)}
+        isLoading={isCategoriesLoading}
       />
-      <VideoGrid videos={filteredVideos} onSelect={(video) => navigate(`/watch/${video.id}`)} />
+      <VideoGrid
+        videos={filteredVideos}
+        onSelect={(video) => navigate(`/watch/${video.id}`)}
+        isLoading={isVideosLoading}
+      />
     </div>
   );
 }

@@ -154,6 +154,21 @@ export const homeApi = baseApi.injectEndpoints({
             ]
           : [{ type: "Videos" as const, id: "LIST" }],
     }),
+    getLikedVideos: builder.query<Video[], void>({
+      query: () => ({
+        url: "/api/videos/liked",
+        method: "get",
+        params: { limit: 50 },
+      }),
+      transformResponse: (response: VideosResponse) => response.data.map(mapVideo),
+      providesTags: (result) =>
+        result
+          ? [
+              { type: "Videos" as const, id: "LIKED" },
+              ...result.map((video) => ({ type: "Videos" as const, id: video.id })),
+            ]
+          : [{ type: "Videos" as const, id: "LIKED" }],
+    }),
     getVideoById: builder.query<Video | null, string>({
       query: (id) => ({
         url: `/api/videos/${id}`,
@@ -174,12 +189,22 @@ export const homeApi = baseApi.injectEndpoints({
         url: `/api/videos/${id}/likes`,
         method: "post",
       }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: "Videos" as const, id },
+        { type: "Videos" as const, id: "LIST" },
+        { type: "Videos" as const, id: "LIKED" },
+      ],
     }),
     unlikeVideo: builder.mutation<{ success: boolean }, string>({
       query: (id) => ({
         url: `/api/videos/${id}/likes`,
         method: "delete",
       }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: "Videos" as const, id },
+        { type: "Videos" as const, id: "LIST" },
+        { type: "Videos" as const, id: "LIKED" },
+      ],
     }),
     getLikeStatus: builder.query<{ liked: boolean }, string>({
       query: (id) => ({
@@ -285,6 +310,7 @@ export const homeApi = baseApi.injectEndpoints({
 export const {
   useGetCategoriesQuery,
   useGetVideosQuery,
+  useGetLikedVideosQuery,
   useGetVideoByIdQuery,
   useIncrementVideoViewMutation,
   useLikeVideoMutation,

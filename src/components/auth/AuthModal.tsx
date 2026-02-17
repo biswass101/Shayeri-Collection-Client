@@ -24,6 +24,7 @@ export default function AuthModal({ open, onClose, onAuthenticated }: AuthModalP
     name: "",
     email: "",
     password: "",
+    avatarFile: null as File | null,
   });
 
   useEffect(() => {
@@ -74,6 +75,7 @@ export default function AuthModal({ open, onClose, onAuthenticated }: AuthModalP
                   description: `Welcome back, ${response.data.user.name}.`,
                 });
                 onClose();
+                setFormState({ name: "", email: "", password: "", avatarFile: null });
                 return;
               }
 
@@ -81,6 +83,7 @@ export default function AuthModal({ open, onClose, onAuthenticated }: AuthModalP
                 name: formState.name,
                 email: formState.email,
                 password: formState.password,
+                avatarFile: formState.avatarFile,
               }).unwrap();
               onAuthenticated?.(response.data.user, response.data.token);
               addToast({
@@ -88,6 +91,7 @@ export default function AuthModal({ open, onClose, onAuthenticated }: AuthModalP
                 description: `Welcome, ${response.data.user.name}.`,
               });
               onClose();
+              setFormState({ name: "", email: "", password: "", avatarFile: null });
             } catch (error) {
               const message =
                 (error as { data?: { error?: string } } | undefined)?.data?.error ||
@@ -108,6 +112,21 @@ export default function AuthModal({ open, onClose, onAuthenticated }: AuthModalP
                 value={formState.name}
                 onChange={(event) =>
                   setFormState((prev) => ({ ...prev, name: event.target.value }))
+                }
+              />
+            </div>
+          ) : null}
+          {mode === "signup" ? (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Profile picture</label>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(event) =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    avatarFile: event.target.files?.[0] ?? null,
+                  }))
                 }
               />
             </div>
@@ -161,7 +180,13 @@ export default function AuthModal({ open, onClose, onAuthenticated }: AuthModalP
           <button
             type="button"
             className="font-medium text-foreground underline-offset-4 hover:underline"
-            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+            onClick={() => {
+              const nextMode = mode === "signin" ? "signup" : "signin";
+              setMode(nextMode);
+              if (nextMode === "signin") {
+                setFormState((prev) => ({ ...prev, avatarFile: null }));
+              }
+            }}
           >
             {mode === "signin" ? "Create an account" : "Sign in"}
           </button>

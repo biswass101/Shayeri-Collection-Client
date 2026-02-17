@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import Chart from "chart.js/auto";
 import { useGetDashboardQuery } from "@/features/admin/adminApi";
@@ -41,6 +41,9 @@ export default function AdminDashboardPage() {
   const lineChartRef = useRef<HTMLCanvasElement | null>(null);
   const barChartRef = useRef<HTMLCanvasElement | null>(null);
   const doughnutChartRef = useRef<HTMLCanvasElement | null>(null);
+  const [animatedStats, setAnimatedStats] = useState<Record<string, number>>({});
+  const [animatedEngagementTotal, setAnimatedEngagementTotal] = useState(0);
+  const [animatedMetrics, setAnimatedMetrics] = useState<Record<string, number>>({});
 
   const labels = useMemo(() => dashboard?.trends?.labels ?? [], [dashboard?.trends?.labels]);
   const shareSeries = dashboard?.trends?.shares ?? [];
@@ -70,6 +73,81 @@ export default function AdminDashboardPage() {
   );
 
   useEffect(() => {
+    let rafId = 0;
+    const start = performance.now();
+    const duration = 600;
+
+    const targets = statItems.reduce<Record<string, number>>((acc, item) => {
+      const parsed = Number(item.value);
+      if (!Number.isNaN(parsed)) {
+        acc[item.label] = parsed;
+      }
+      return acc;
+    }, {});
+
+    const animate = (now: number) => {
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const next: Record<string, number> = {};
+      Object.entries(targets).forEach(([label, target]) => {
+        next[label] = Math.round(target * eased);
+      });
+      setAnimatedStats(next);
+      if (progress < 1) {
+        rafId = requestAnimationFrame(animate);
+      }
+    };
+
+    rafId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId);
+  }, [statItems]);
+
+  useEffect(() => {
+    let rafId = 0;
+    const start = performance.now();
+    const duration = 600;
+    const target = engagementTotal;
+
+    const animate = (now: number) => {
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setAnimatedEngagementTotal(Math.round(target * eased));
+      if (progress < 1) {
+        rafId = requestAnimationFrame(animate);
+      }
+    };
+
+    rafId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId);
+  }, [engagementTotal]);
+
+  useEffect(() => {
+    let rafId = 0;
+    const start = performance.now();
+    const duration = 700;
+    const targets = metricBars.reduce<Record<string, number>>((acc, metric) => {
+      acc[metric.label] = metric.value;
+      return acc;
+    }, {});
+
+    const animate = (now: number) => {
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const next: Record<string, number> = {};
+      Object.entries(targets).forEach(([label, target]) => {
+        next[label] = Math.round(target * eased);
+      });
+      setAnimatedMetrics(next);
+      if (progress < 1) {
+        rafId = requestAnimationFrame(animate);
+      }
+    };
+
+    rafId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId);
+  }, []);
+
+  useEffect(() => {
     if (!lineChartRef.current || !barChartRef.current || !doughnutChartRef.current) return;
 
     const lineChart = new Chart(lineChartRef.current, {
@@ -80,8 +158,8 @@ export default function AdminDashboardPage() {
           {
             label: "Shares",
             data: shareSeries.length ? shareSeries : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            borderColor: "hsl(222.2 84% 4.9%)",
-            backgroundColor: "hsla(222.2, 84%, 4.9%, 0.1)",
+            borderColor: "hsl(210 90% 52%)",
+            backgroundColor: "hsla(210 90% 52% / 0.2)",
             tension: 0.3,
             fill: true,
             pointRadius: 2,
@@ -89,8 +167,8 @@ export default function AdminDashboardPage() {
           {
             label: "Downloads",
             data: downloadSeries.length ? downloadSeries : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            borderColor: "hsl(240 3.8% 46.1%)",
-            backgroundColor: "hsla(240, 3.8%, 46.1%, 0.08)",
+            borderColor: "hsl(142 65% 45%)",
+            backgroundColor: "hsla(142 65% 45% / 0.18)",
             tension: 0.3,
             fill: true,
             pointRadius: 2,
@@ -106,7 +184,7 @@ export default function AdminDashboardPage() {
         },
         scales: {
           x: { grid: { display: false } },
-          y: { grid: { color: "hsla(240, 3.8%, 46.1%, 0.2)" } },
+          y: { grid: { color: "hsla(var(--border) / 0.5)" } },
         },
       },
     });
@@ -119,7 +197,7 @@ export default function AdminDashboardPage() {
           {
             label: "Plays",
             data: dashboard?.categories?.map((cat) => cat.value) ?? [0],
-            backgroundColor: "hsl(222.2 84% 4.9%)",
+            backgroundColor: "hsl(0 72% 52%)",
             borderRadius: 6,
           },
         ],
@@ -130,7 +208,7 @@ export default function AdminDashboardPage() {
         plugins: { legend: { display: false } },
         scales: {
           x: { grid: { display: false } },
-          y: { grid: { color: "hsla(240, 3.8%, 46.1%, 0.2)" } },
+          y: { grid: { color: "hsla(var(--border) / 0.5)" } },
         },
       },
     });
@@ -143,10 +221,10 @@ export default function AdminDashboardPage() {
           {
             data: engagementValues,
             backgroundColor: [
-              "hsl(222.2 84% 4.9%)",
-              "hsl(240 3.8% 46.1%)",
-              "hsl(240 5% 64.9%)",
-              "hsl(240 6% 90%)",
+              "hsl(210 90% 52%)",
+              "hsl(0 72% 52%)",
+              "hsl(142 65% 45%)",
+              "hsl(38 85% 55%)",
             ],
             borderWidth: 0,
           },
@@ -179,7 +257,9 @@ export default function AdminDashboardPage() {
               <span>{item.label}</span>
               <item.icon className="h-4 w-4" />
             </div>
-            <div className="mt-1 text-lg font-bold text-foreground">{item.value}</div>
+            <div className="mt-1 text-lg font-bold text-foreground">
+              {animatedStats[item.label] ?? item.value}
+            </div>
           </Card>
         ))}
       </div>
@@ -206,7 +286,7 @@ export default function AdminDashboardPage() {
                 <div className="relative aspect-square w-full max-w-[160px]">
                   <canvas ref={doughnutChartRef} className="block h-full w-full max-w-full" />
                   <div className="absolute inset-0 grid place-items-center text-xs font-bold">
-                    {engagementTotal}
+                    {animatedEngagementTotal}
                   </div>
                 </div>
               </div>
@@ -286,12 +366,12 @@ export default function AdminDashboardPage() {
               <div key={metric.label}>
                 <div className="mb-1 flex items-center justify-between text-xs">
                   <span>{metric.label}</span>
-                  <span>{metric.value}%</span>
+                  <span>{animatedMetrics[metric.label] ?? 0}%</span>
                 </div>
                 <div className="h-2 rounded-full bg-muted">
                   <div
                     className="h-2 rounded-full bg-foreground"
-                    style={{ width: `${metric.value}%` }}
+                    style={{ width: `${animatedMetrics[metric.label] ?? 0}%` }}
                   />
                 </div>
               </div>

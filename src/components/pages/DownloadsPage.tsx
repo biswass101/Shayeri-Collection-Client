@@ -6,7 +6,10 @@ import { useGetUserDownloadsQuery } from "@/features/home/homeApi";
 
 export default function DownloadsPage() {
   const navigate = useNavigate();
-  const { data: downloads = [] } = useGetUserDownloadsQuery();
+  const { data: downloads = [], isLoading } = useGetUserDownloadsQuery();
+
+  const skeletonClass =
+    "relative overflow-hidden bg-accent before:absolute before:inset-0 before:block before:content-[''] before:-translate-x-full before:bg-[linear-gradient(90deg,rgba(255,255,255,0)_0%,rgba(255,255,255,0.4)_50%,rgba(255,255,255,0)_100%)] before:animate-shimmer";
 
   return (
     <div className="mt-6 space-y-4">
@@ -20,7 +23,26 @@ export default function DownloadsPage() {
         <div className="text-xs text-muted-foreground">{downloads.length} items</div>
       </div>
 
-      {downloads.length === 0 ? (
+      {isLoading ? (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 8 }, (_, index) => (
+            <Card key={`download-skeleton-${index}`} className="rounded-2xl border border-border bg-card p-3 shadow-sm">
+              <div className="mb-3 h-24 overflow-hidden rounded-xl bg-muted">
+                <div className={`${skeletonClass} h-full w-full`} />
+              </div>
+              <div className="space-y-2">
+                <div className={`${skeletonClass} h-3 w-[75%] rounded-full`} />
+                <div className={`${skeletonClass} h-2.5 w-[90%] rounded-full`} />
+                <div className={`${skeletonClass} h-2.5 w-[50%] rounded-full`} />
+              </div>
+              <div className="mt-3 flex gap-2">
+                <div className={`${skeletonClass} h-8 w-20 rounded-full`} />
+                <div className={`${skeletonClass} h-8 w-20 rounded-full`} />
+              </div>
+            </Card>
+          ))}
+        </div>
+      ) : downloads.length === 0 ? (
         <Card className="rounded-2xl border border-border bg-card p-6">
           <p className="text-sm text-muted-foreground">No downloads yet.</p>
         </Card>

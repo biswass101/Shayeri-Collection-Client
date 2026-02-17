@@ -65,4 +65,62 @@
 body {
   margin: 0;
   min-height: 100vh;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.75), transparent 38%),
+    radial-gradient(circle at 88% 6%, rgba(203, 227, 255, 0.35), transparent 40%),
+    radial-gradient(circle at 0% 85%, rgba(204, 255, 233, 0.25), transparent 42%);
+  background-attachment: fixed;
+}
+
+html.dark body {
+  background-image:
+    radial-gradient(circle at 10% 18%, rgba(40, 40, 48, 0.85), transparent 40%),
+    radial-gradient(circle at 86% 8%, rgba(30, 60, 70, 0.35), transparent 45%),
+    radial-gradient(circle at 0% 85%, rgba(30, 60, 50, 0.25), transparent 45%);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  backdrop-filter: blur(16px) saturate(120%);
+  background: rgba(255, 255, 255, 0.35);
+  z-index: 0;
+}
+
+html.dark body::before {
+  background: rgba(12, 12, 14, 0.2);
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes pageFadeUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.page-enter {
+  animation: pageFadeUp 240ms ease-out both;
+}
+
+.page-stagger-item {
+  animation: pageFadeUp 320ms ease-out both;
+  animation-delay: calc(var(--stagger-index, 0) * 40ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  .page-stagger-item {
+    animation: none;
+  }
 }

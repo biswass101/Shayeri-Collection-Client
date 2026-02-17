@@ -11,11 +11,20 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
     register: builder.mutation<AuthResponse, RegisterRequest>({
-      query: (body) => ({
-        url: "/api/auth/register",
-        method: "post",
-        data: body,
-      }),
+      query: (body) => {
+        const formData = new FormData();
+        formData.append("name", body.name);
+        formData.append("email", body.email);
+        formData.append("password", body.password);
+        if (body.avatarFile) {
+          formData.append("avatar", body.avatarFile);
+        }
+        return {
+          url: "/api/auth/register",
+          method: "post",
+          data: formData,
+        };
+      },
     }),
   }),
 });

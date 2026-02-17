@@ -39,7 +39,7 @@ export default function AdminShell() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground lg:h-screen">
+    <div className="min-h-screen bg-transparent text-foreground lg:h-screen">
       <div className="grid min-h-screen grid-cols-1 lg:h-screen lg:grid-cols-[256px_1fr]">
         <AdminSidebar />
         <div className="w-full min-w-0 px-3 pt-4 pb-24 sm:px-4 sm:pt-5 sm:pb-12 lg:h-screen lg:overflow-y-auto lg:px-6 lg:py-5">

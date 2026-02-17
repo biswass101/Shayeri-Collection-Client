@@ -3,7 +3,7 @@ import Hls from "hls.js";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { Video, CommentItem } from "@/features/home/homeTypes";
-import { Download, Heart, Send, Share2, Trash2, Pencil, Reply } from "lucide-react";
+import { ArrowLeft, Download, Heart, Send, Share2, Trash2, Pencil, Reply } from "lucide-react";
 import {
   useIncrementVideoViewMutation,
   useLikeVideoMutation,
@@ -298,8 +298,15 @@ export default function VideoPlayerPage({ video, isAuthenticated, onBack }: Vide
   return (
     <div className="mt-6 space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <Button variant="ghost" size="sm" onClick={onBack}>
-          Back to Home
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-2"
+          onClick={onBack}
+          aria-label="Back to Home"
+        >
+          <ArrowLeft size={16} className="sm:mr-1" />
+          <span className="hidden sm:inline">Back to Home</span>
         </Button>
       </div>
 
@@ -392,9 +399,14 @@ export default function VideoPlayerPage({ video, isAuthenticated, onBack }: Vide
                     if (!downloadUrl) {
                       throw new Error("Missing download URL");
                     }
+                    const safeTitle = (video.title || "sayeri-video")
+                      .toLowerCase()
+                      .replace(/[^a-z0-9]+/g, "-")
+                      .replace(/^-+|-+$/g, "")
+                      .slice(0, 60);
                     const link = document.createElement("a");
                     link.href = downloadUrl;
-                    link.target = "_blank";
+                    link.download = `${safeTitle || "sayeri-video"}.mp4`;
                     link.rel = "noopener noreferrer";
                     document.body.appendChild(link);
                     link.click();

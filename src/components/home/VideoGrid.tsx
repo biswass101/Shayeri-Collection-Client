@@ -1,4 +1,5 @@
 import type { Video } from "@/features/home/homeTypes";
+import type { CSSProperties } from "react";
 import VideoCard from "./VideoCard";
 
 type VideoGridProps = {
@@ -37,9 +38,23 @@ export default function VideoGrid({ videos, onSelect, isLoading = false }: Video
     >
       {isLoading
         ? Array.from({ length: skeletonCount }, (_, index) => (
-            <VideoSkeletonCard key={`video-skeleton-${index}`} />
+            <div
+              key={`video-skeleton-${index}`}
+              className="page-stagger-item"
+              style={{ "--stagger-index": index } as CSSProperties}
+            >
+              <VideoSkeletonCard />
+            </div>
           ))
-        : videos.map((video) => <VideoCard key={video.id} video={video} onSelect={onSelect} />)}
+        : videos.map((video, index) => (
+            <div
+              key={video.id}
+              className="page-stagger-item"
+              style={{ "--stagger-index": index } as CSSProperties}
+            >
+              <VideoCard video={video} onSelect={onSelect} />
+            </div>
+          ))}
     </section>
   );
 }

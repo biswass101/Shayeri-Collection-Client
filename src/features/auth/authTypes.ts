@@ -2,6 +2,7 @@ export type AuthUser = {
   id: string;
   email: string;
   name: string;
+  avatarUrl?: string | null;
   role: string;
 };
 
@@ -23,4 +24,5 @@ export type RegisterRequest = {
   name: string;
   email: string;
   password: string;
+  avatarFile?: File | null;
 };

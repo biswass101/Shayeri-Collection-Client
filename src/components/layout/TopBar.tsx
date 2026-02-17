@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useUI } from "@/components/layout/UIContext";
+import ProfileModal from "@/components/layout/ProfileModal";
 import { useGetNotificationsQuery, useMarkNotificationReadMutation } from "@/features/notifications/notificationApi";
-import { Bell, Moon, Search, Sun, X } from "lucide-react";
+import { Bell, Moon, Search, Sun, User, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -15,6 +16,9 @@ type TopBarProps = {
 
 export default function TopBar({ searchValue, onSearchChange, isDark, onToggleTheme }: TopBarProps) {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [isSearchActive, setIsSearchActive] = useState(false);
   const { isAuthenticated, setAuthOpen, user, clearAuthSession } = useUI();
   const navigate = useNavigate();
   const { data: notifications = [], isLoading, isError } = useGetNotificationsQuery(undefined, {
@@ -44,28 +48,77 @@ export default function TopBar({ searchValue, onSearchChange, isDark, onToggleTh
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-3 lg:flex-nowrap lg:gap-4">
-      <div className="order-2 flex w-full min-w-0 flex-1 items-center gap-3 rounded-full bg-card px-4 py-1.5 shadow-[inset_0_0_0_1px_hsl(var(--border))] sm:py-2 lg:order-none lg:w-auto">
+    <>
+      <div className="flex flex-wrap items-center gap-3 lg:flex-nowrap lg:gap-4">
+      <div className="order-1 mr-auto flex items-center lg:hidden">
+        <div className="relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9 rounded-full border border-border bg-card"
+            aria-label="Profile menu"
+            onClick={() => {
+              if (!isAuthenticated) {
+                setAuthOpen(true);
+                return;
+              }
+              setShowProfileMenu((prev) => !prev);
+            }}
+          >
+            {user?.avatarUrl ? (
+              <img src={user.avatarUrl} alt={user?.name ?? "User"} className="h-full w-full rounded-full object-cover" />
+            ) : (
+              <User size={18} />
+            )}
+          </Button>
+          {showProfileMenu ? (
+            <div className="absolute left-0 top-[calc(100%+10px)] z-30 w-40 rounded-xl border border-border bg-card p-2 shadow-[0_18px_40px_rgba(0,0,0,0.18)]">
+              <button
+                type="button"
+                className="w-full rounded-lg px-3 py-2 text-left text-sm transition hover:bg-accent"
+                onClick={() => {
+                  setShowProfileMenu(false);
+                  setProfileOpen(true);
+                }}
+              >
+                Edit Profile
+              </button>
+              <button
+                type="button"
+                className="w-full rounded-lg px-3 py-2 text-left text-sm text-destructive transition hover:bg-accent"
+                onClick={() => {
+                  setShowProfileMenu(false);
+                  clearAuthSession();
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          ) : null}
+        </div>
+      </div>
+      <div
+        className={`order-2 flex w-full min-w-0 flex-1 items-center gap-3 rounded-full bg-card px-4 py-1.5 shadow-[inset_0_0_0_1px_hsl(var(--border))] transition-[width,flex,opacity,transform] duration-300 ease-out sm:py-2 lg:order-none lg:w-auto ${
+          isSearchActive ? "sm:w-auto" : ""
+        }`}
+      >
         <Search size={18} className="text-muted-foreground" />
         <Input
           className="h-7 border-0 bg-transparent px-0 text-sm shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none sm:h-9"
           placeholder="Search Sayeri videos"
           value={searchValue}
           onChange={(event) => onSearchChange(event.target.value)}
+          onFocus={() => setIsSearchActive(true)}
         />
         <span className="ml-auto hidden rounded-lg border border-border bg-secondary px-2 py-0.5 text-xs font-semibold text-muted-foreground sm:inline-flex">
           /
         </span>
       </div>
-      <div className="order-1 ml-auto flex items-center gap-2 lg:ml-0">
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-9 border-border bg-card text-xs lg:hidden"
-          onClick={() => (user ? clearAuthSession() : setAuthOpen(true))}
-        >
-          {user ? "Logout" : "Authenticate"}
-        </Button>
+      <div
+        className={`order-1 ml-auto items-center gap-2 transition-[opacity,transform] duration-300 ease-out lg:ml-0 ${
+          isSearchActive ? "hidden sm:flex sm:opacity-100 sm:translate-y-0" : "flex"
+        }`}
+      >
         <div className="relative">
           <Button
             variant="outline"
@@ -145,6 +198,22 @@ export default function TopBar({ searchValue, onSearchChange, isDark, onToggleTh
           {isDark ? <Sun size={18} /> : <Moon size={18} />}
         </Button>
       </div>
-    </div>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className={`order-3 ml-auto h-9 text-xs transition-[opacity,transform] duration-300 ease-out sm:hidden ${
+          isSearchActive ? "flex opacity-100 translate-y-0" : "hidden opacity-0 -translate-y-1"
+        }`}
+        onClick={() => {
+          onSearchChange("");
+          setIsSearchActive(false);
+        }}
+      >
+        Cancel
+      </Button>
+      </div>
+      <ProfileModal open={profileOpen} onClose={() => setProfileOpen(false)} />
+    </>
   );
 }

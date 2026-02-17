@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { Bell, Home } from "lucide-react";
+import { Bell, Home, LogIn, LogOut } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import { useUI } from "@/components/layout/UIContext";
@@ -8,7 +8,7 @@ import { useGetNotificationsQuery, useMarkNotificationReadMutation } from "@/fea
 import { useMemo, useState } from "react";
 
 export default function AdminShell() {
-  const { isDark, toggleTheme } = useUI();
+  const { isDark, toggleTheme, user, clearAuthSession } = useUI();
   const [showNotifications, setShowNotifications] = useState(false);
   const { isAuthenticated, setAuthOpen } = useUI();
   const navigate = useNavigate();
@@ -39,28 +39,36 @@ export default function AdminShell() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[256px_1fr]">
+    <div className="min-h-screen bg-background text-foreground lg:h-screen">
+      <div className="grid min-h-screen grid-cols-1 lg:h-screen lg:grid-cols-[256px_1fr]">
         <AdminSidebar />
-        <div className="px-3 pt-4 pb-24 sm:px-4 sm:pt-5 sm:pb-12 lg:px-6 lg:py-5">
-          <header className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-card px-3 py-3 shadow-sm ring-1 ring-border/40 sm:px-4">
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        <div className="w-full min-w-0 px-3 pt-4 pb-24 sm:px-4 sm:pt-5 sm:pb-12 lg:h-screen lg:overflow-y-auto lg:px-6 lg:py-5">
+          <header className="mb-5 flex w-full min-w-0 flex-row flex-nowrap items-center justify-between gap-2 rounded-xl bg-card px-3 py-3 shadow-sm ring-1 ring-border/40 sm:px-4">
+            <div className="flex w-auto flex-nowrap items-center gap-2 sm:gap-3">
               <Link
                 to="/"
                 className={cn(
                   buttonVariants({ variant: "outline", size: "sm" }),
                   "border-border bg-background text-foreground hover:bg-accent"
                 )}
+                aria-label="Client Home"
               >
                 <Home size={16} className="mr-2" />
-                Client Home
+                <span className="hidden sm:inline">Client Home</span>
               </Link>
-              <div className="rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold sm:px-4 sm:text-sm">
-                Admin Control Center
-              </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex w-auto flex-nowrap items-center justify-end gap-2 sm:ml-auto">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 w-9 border-border bg-background p-0 text-xs lg:hidden sm:w-auto sm:px-3"
+                onClick={() => (user ? clearAuthSession() : setAuthOpen(true))}
+                aria-label={user ? "Logout" : "Authenticate"}
+              >
+                {user ? <LogOut size={14} className="sm:mr-2" /> : <LogIn size={14} className="sm:mr-2" />}
+                <span className="hidden sm:inline">{user ? "Logout" : "Authenticate"}</span>
+              </Button>
               <div className="relative">
                 <Button
                   variant="outline"

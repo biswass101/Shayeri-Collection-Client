@@ -171,8 +171,8 @@ export default function AdminDashboardPage() {
   }, [labels, shareSeries, downloadSeries, dashboard?.categories, engagementValues]);
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-5">
+    <div className="w-full min-w-0 space-y-4">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
         {statItems.map((item) => (
           <Card key={item.label} className="rounded-xl border border-border bg-card p-3 shadow-sm">
             <div className="flex items-center justify-between text-xs uppercase tracking-wide text-muted-foreground">
@@ -192,8 +192,8 @@ export default function AdminDashboardPage() {
                 <BarChart3 className="h-3.5 w-3.5" />
                 Video Analytics
               </div>
-              <div className="h-44 rounded-lg border border-border bg-background p-2">
-                <canvas ref={lineChartRef} className="h-full w-full" />
+              <div className="min-h-[160px] w-full rounded-lg border border-border bg-background p-2 sm:min-h-[200px]">
+                <canvas ref={lineChartRef} className="block h-full w-full max-w-full" />
               </div>
             </div>
 
@@ -202,9 +202,9 @@ export default function AdminDashboardPage() {
                 <Share2 className="h-3.5 w-3.5" />
                 Engagement Mix
               </div>
-              <div className="grid h-44 place-items-center">
-                <div className="relative h-28 w-28">
-                  <canvas ref={doughnutChartRef} className="h-full w-full" />
+              <div className="grid min-h-[160px] place-items-center sm:min-h-[200px]">
+                <div className="relative aspect-square w-full max-w-[160px]">
+                  <canvas ref={doughnutChartRef} className="block h-full w-full max-w-full" />
                   <div className="absolute inset-0 grid place-items-center text-xs font-bold">
                     {engagementTotal}
                   </div>
@@ -238,8 +238,8 @@ export default function AdminDashboardPage() {
               <Layers className="h-3.5 w-3.5" />
               Plays By Category
             </div>
-            <div className="h-44 rounded-lg border border-border bg-background p-2">
-              <canvas ref={barChartRef} className="h-full w-full" />
+            <div className="min-h-[160px] w-full rounded-lg border border-border bg-background p-2 sm:min-h-[200px]">
+              <canvas ref={barChartRef} className="block h-full w-full max-w-full" />
             </div>
           </div>
 
@@ -248,32 +248,35 @@ export default function AdminDashboardPage() {
               <AlertTriangle className="h-3.5 w-3.5" />
               System Actions (Realtime)
             </div>
-            <div className="overflow-x-auto">
-              <div className="min-w-[620px] divide-y divide-border">
-              {activityRows.map((row) => (
-                <div key={`${row.action}-${row.time}`} className="grid grid-cols-[1.5fr_1.4fr_1fr_1fr] px-3 py-2 text-xs">
-                  <span>{row.action}</span>
-                  <span className="truncate">{row.actor}</span>
-                  <span>{row.time}</span>
-                  <span
-                    className={`inline-flex w-fit items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                      row.state === "Completed"
-                        ? "bg-foreground text-background"
-                        : row.state === "Running"
-                          ? "bg-muted text-foreground"
-                          : "bg-amber-100 text-amber-900"
-                    }`}
+            <div className="w-full overflow-x-auto">
+              <div className="divide-y divide-border">
+                {activityRows.map((row) => (
+                  <div
+                    key={`${row.action}-${row.time}`}
+                    className="grid grid-cols-1 gap-1 px-3 py-2 text-xs sm:grid-cols-[1.5fr_1.4fr_1fr_1fr] sm:gap-0"
                   >
-                    {row.state}
-                  </span>
-                </div>
-              ))}
+                    <span>{row.action}</span>
+                    <span className="truncate">{row.actor}</span>
+                    <span>{row.time}</span>
+                    <span
+                      className={`inline-flex w-fit items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                        row.state === "Completed"
+                          ? "bg-foreground text-background"
+                          : row.state === "Running"
+                            ? "bg-muted text-foreground"
+                            : "bg-amber-100 text-amber-900"
+                      }`}
+                    >
+                      {row.state}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </Card>
 
-        <Card className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+        <Card className="w-full min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm">
           <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide">
             <Download className="h-4 w-4" />
             Analytics and Memory Usage

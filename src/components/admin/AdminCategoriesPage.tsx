@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -38,6 +39,7 @@ export default function AdminCategoriesPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; name: string } | null>(null);
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
   const [formState, setFormState] = useState<CategoryFormState>({
     name: "",
     slug: "",
@@ -53,6 +55,12 @@ export default function AdminCategoriesPage() {
     setEditingId(null);
     setFormState({ name: "", slug: "", description: "" });
   };
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      setPortalTarget(document.body);
+    }
+  }, []);
 
   const handleSubmit = async () => {
     if (!formState.name.trim()) {
@@ -135,71 +143,80 @@ export default function AdminCategoriesPage() {
         </Button>
       </div>
 
-      {showForm ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 sm:p-4">
-          <Card className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border bg-card p-4 shadow-lg">
-            <div className="mb-4 flex items-center justify-between">
-              <div className="text-sm font-semibold">{editingId ? "Edit Category" : "Add Category"}</div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  setShowForm(false);
-                  resetForm();
-                }}
-              >
-                <X size={16} />
-              </Button>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-muted-foreground">Name</label>
-                <Input
-                  value={formState.name}
-                  onChange={(event) => setFormState((prev) => ({ ...prev, name: event.target.value }))}
-                  placeholder="Category name"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-muted-foreground">Slug</label>
-                <Input
-                  value={formState.slug}
-                  onChange={(event) => setFormState((prev) => ({ ...prev, slug: event.target.value }))}
-                  placeholder="Auto-generated if empty"
-                />
-              </div>
-              <div className="md:col-span-2 space-y-2">
-                <label className="text-xs font-semibold text-muted-foreground">Description</label>
-                <textarea
-                  className="min-h-[90px] w-full resize-none rounded-md border border-border bg-background p-3 text-sm"
-                  value={formState.description}
-                  onChange={(event) => setFormState((prev) => ({ ...prev, description: event.target.value }))}
-                  placeholder="Optional description"
-                />
-              </div>
-              <div className="md:col-span-2 flex flex-wrap gap-2">
-                <Button
-                  className="gap-2"
-                  disabled={createState.isLoading || updateState.isLoading}
-                  onClick={handleSubmit}
-                >
-                  {editingId ? <Pencil size={16} /> : <Plus size={16} />}
-                  {editingId ? "Save Changes" : "Create Category"}
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setShowForm(false);
-                    resetForm();
-                  }}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          </Card>
-        </div>
-      ) : null}
+      {showForm && portalTarget
+        ? createPortal(
+            <div className="fixed inset-0 z-50 grid min-h-[100dvh] w-screen place-items-center bg-black/50 backdrop-blur-sm p-3 sm:p-4">
+              <Card className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border bg-card p-4 shadow-lg">
+                <div className="mb-4 flex items-center justify-between">
+                  <div className="text-sm font-semibold">{editingId ? "Edit Category" : "Add Category"}</div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setShowForm(false);
+                      resetForm();
+                    }}
+                  >
+                    <X size={16} />
+                  </Button>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-muted-foreground">Name</label>
+                    <Input
+                      value={formState.name}
+                      onChange={(event) =>
+                        setFormState((prev) => ({ ...prev, name: event.target.value }))
+                      }
+                      placeholder="Category name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-muted-foreground">Slug</label>
+                    <Input
+                      value={formState.slug}
+                      onChange={(event) =>
+                        setFormState((prev) => ({ ...prev, slug: event.target.value }))
+                      }
+                      placeholder="Auto-generated if empty"
+                    />
+                  </div>
+                  <div className="md:col-span-2 space-y-2">
+                    <label className="text-xs font-semibold text-muted-foreground">Description</label>
+                    <textarea
+                      className="min-h-[90px] w-full resize-none rounded-md border border-border bg-background p-3 text-sm"
+                      value={formState.description}
+                      onChange={(event) =>
+                        setFormState((prev) => ({ ...prev, description: event.target.value }))
+                      }
+                      placeholder="Optional description"
+                    />
+                  </div>
+                  <div className="md:col-span-2 flex flex-wrap gap-2">
+                    <Button
+                      className="gap-2"
+                      disabled={createState.isLoading || updateState.isLoading}
+                      onClick={handleSubmit}
+                    >
+                      {editingId ? <Pencil size={16} /> : <Plus size={16} />}
+                      {editingId ? "Save Changes" : "Create Category"}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setShowForm(false);
+                        resetForm();
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            </div>,
+            portalTarget
+          )
+        : null}
 
       {confirmDelete ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 sm:p-4">

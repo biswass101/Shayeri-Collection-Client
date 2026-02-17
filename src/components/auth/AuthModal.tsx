@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLoginMutation, useRegisterMutation } from "@/features/auth/authApi";
@@ -18,13 +19,20 @@ export default function AuthModal({ open, onClose, onAuthenticated }: AuthModalP
   const [login, loginState] = useLoginMutation();
   const [register, registerState] = useRegisterMutation();
   const { addToast } = useToast();
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
   const [formState, setFormState] = useState({
     name: "",
     email: "",
     password: "",
   });
 
-  if (!open) return null;
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      setPortalTarget(document.body);
+    }
+  }, []);
+
+  if (!open || !portalTarget) return null;
 
   const isLoading = loginState.isLoading || registerState.isLoading;
   const errorMessage =
@@ -32,14 +40,9 @@ export default function AuthModal({ open, onClose, onAuthenticated }: AuthModalP
     (registerState.error as { data?: { error?: string } } | undefined)?.data?.error ||
     null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div
-        className="absolute inset-0 bg-black/50"
-        role="presentation"
-        onClick={onClose}
-      />
-      <div className="relative w-full max-w-md rounded-2xl border border-border bg-background p-6 shadow-xl">
+  return createPortal(
+    <div className="fixed inset-0 z-50 grid min-h-[100dvh] w-screen place-items-center bg-black/50 backdrop-blur-sm p-3 sm:p-4">
+      <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-lg">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">
             {mode === "signin" ? "Sign In" : "Sign Up"}
@@ -164,6 +167,7 @@ export default function AuthModal({ open, onClose, onAuthenticated }: AuthModalP
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    portalTarget
   );
 }

@@ -45,10 +45,10 @@ export default function TopBar({ searchValue, onSearchChange, isDark, onToggleTh
 
   return (
     <div className="flex flex-wrap items-center gap-3 lg:flex-nowrap lg:gap-4">
-      <div className="order-2 flex w-full min-w-0 flex-1 items-center gap-3 rounded-full bg-card px-4 py-2 shadow-[inset_0_0_0_1px_hsl(var(--border))] lg:order-none lg:w-auto">
+      <div className="order-2 flex w-full min-w-0 flex-1 items-center gap-3 rounded-full bg-card px-4 py-1.5 shadow-[inset_0_0_0_1px_hsl(var(--border))] sm:py-2 lg:order-none lg:w-auto">
         <Search size={18} className="text-muted-foreground" />
         <Input
-          className="border-0 bg-transparent px-0 text-sm shadow-none focus-visible:ring-0"
+          className="h-7 border-0 bg-transparent px-0 text-sm shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none sm:h-9"
           placeholder="Search Sayeri videos"
           value={searchValue}
           onChange={(event) => onSearchChange(event.target.value)}

@@ -42,7 +42,7 @@ export default function AdminShell() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[256px_1fr]">
         <AdminSidebar />
-        <div className="px-3 py-4 sm:px-4 lg:px-6 lg:py-5">
+        <div className="px-3 pt-4 pb-24 sm:px-4 sm:pt-5 sm:pb-12 lg:px-6 lg:py-5">
           <header className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-card px-3 py-3 shadow-sm ring-1 ring-border/40 sm:px-4">
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <Link
@@ -61,11 +61,11 @@ export default function AdminShell() {
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="notification-wrap">
+              <div className="relative">
                 <Button
                   variant="outline"
                   size="icon"
-                  className="notification-button border-border bg-background text-foreground"
+                  className="relative h-9 w-9 rounded-xl border-border bg-background text-foreground sm:h-10 sm:w-10"
                   aria-label="Notifications"
                   onClick={() => {
                     if (!isAuthenticated) {
@@ -76,32 +76,36 @@ export default function AdminShell() {
                   }}
                 >
                   <Bell size={16} />
-                  {unreadCount > 0 ? <span className="notification-dot" /> : null}
+                  {unreadCount > 0 ? (
+                    <span className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-foreground" />
+                  ) : null}
                 </Button>
                 {showNotifications ? (
-                  <div className="notification-panel">
-                    <div className="notification-title">Notifications</div>
+                  <div className="absolute -right-2 top-[calc(100%+12px)] z-20 w-[min(92vw,320px)] rounded-2xl border border-border bg-card p-3 shadow-[0_18px_40px_rgba(0,0,0,0.18)] sm:right-0 sm:w-64">
+                    <div className="mb-2 text-sm font-semibold">Notifications</div>
                     {isLoading ? (
-                      <div className="notification-empty">Loading notifications...</div>
+                      <div className="px-2 py-1 text-xs text-muted-foreground">Loading notifications...</div>
                     ) : isError ? (
-                      <div className="notification-empty">Could not load notifications.</div>
+                      <div className="px-2 py-1 text-xs text-muted-foreground">Could not load notifications.</div>
                     ) : notifications.length === 0 ? (
-                      <div className="notification-empty">No notifications yet.</div>
+                      <div className="px-2 py-1 text-xs text-muted-foreground">No notifications yet.</div>
                     ) : (
-                      <ul className="notification-list">
+                      <ul className="grid max-h-60 list-none gap-2 overflow-y-auto p-0 text-xs text-muted-foreground">
                         {notifications.map((note) => (
                           <li
                             key={note.id}
-                            className={`notification-item${note.isRead ? "" : " unread"}`}
+                            className={`cursor-pointer rounded-lg p-2 text-foreground transition hover:bg-accent ${
+                              note.isRead ? "bg-secondary" : "border border-border bg-card"
+                            }`}
                             onClick={() => handleNotificationClick(note)}
                           >
-                            <div className="notification-item-title">{note.title}</div>
-                            {note.body ? <div className="notification-item-body">{note.body}</div> : null}
-                            <div className="notification-item-footer">
-                              <div className="notification-meta">{note.time}</div>
+                            <div className="text-sm font-semibold">{note.title}</div>
+                            {note.body ? <div className="text-xs text-muted-foreground">{note.body}</div> : null}
+                            <div className="mt-1 flex items-center justify-between gap-2">
+                              <div className="text-[0.7rem] text-muted-foreground">{note.time}</div>
                               <button
                                 type="button"
-                                className="notification-mark"
+                                className="text-[0.7rem] text-muted-foreground transition hover:text-foreground"
                                 onClick={(event) => {
                                   event.stopPropagation();
                                   handleMarkRead(note);

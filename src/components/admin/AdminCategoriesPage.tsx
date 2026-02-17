@@ -112,6 +112,9 @@ export default function AdminCategoriesPage() {
     }
   };
 
+  const skeletonClass =
+    "relative overflow-hidden bg-accent before:absolute before:inset-0 before:block before:content-[''] before:-translate-x-full before:bg-[linear-gradient(90deg,rgba(255,255,255,0)_0%,rgba(255,255,255,0.4)_50%,rgba(255,255,255,0)_100%)] before:animate-shimmer";
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -242,17 +245,20 @@ export default function AdminCategoriesPage() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" aria-busy={isLoading}>
         {isLoading
           ? Array.from({ length: 6 }, (_, index) => (
-              <div key={`category-skeleton-${index}`} className="admin-category-skeleton-card">
-                <div className="admin-category-skeleton-head">
-                  <div className="admin-category-skeleton-title skeleton" />
-                  <div className="admin-category-skeleton-slug skeleton" />
+              <div
+                key={`category-skeleton-${index}`}
+                className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm"
+              >
+                <div className="flex flex-col gap-2">
+                  <div className={`${skeletonClass} h-3 w-[60%] rounded-full`} />
+                  <div className={`${skeletonClass} h-2.5 w-[40%] rounded-full`} />
                 </div>
-                <div className="admin-category-skeleton-actions">
-                  <div className="admin-category-skeleton-action skeleton" />
-                  <div className="admin-category-skeleton-action skeleton" />
+                <div className="flex gap-2">
+                  <div className={`${skeletonClass} h-7 w-20 rounded-full`} />
+                  <div className={`${skeletonClass} h-7 w-20 rounded-full`} />
                 </div>
-                <div className="admin-category-skeleton-desc skeleton" />
-                <div className="admin-category-skeleton-desc skeleton short" />
+                <div className={`${skeletonClass} h-3 w-full rounded-full`} />
+                <div className={`${skeletonClass} h-3 w-[70%] rounded-full`} />
               </div>
             ))
           : sortedCategories.map((category) => (

@@ -44,6 +44,14 @@ export default {
       fontFamily: {
         sans: ["Roboto", "ui-sans-serif", "system-ui", "sans-serif"],
       },
+      keyframes: {
+        shimmer: {
+          "100%": { transform: "translateX(100%)" },
+        },
+      },
+      animation: {
+        shimmer: "shimmer 1.6s infinite",
+      },
     },
   },
   plugins: [],

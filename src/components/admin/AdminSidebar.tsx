@@ -13,7 +13,7 @@ export default function AdminSidebar() {
   const { user, clearAuthSession } = useUI();
 
   return (
-    <aside className="flex w-full flex-col gap-3 bg-card/80 p-3 shadow-[inset_-1px_0_0_hsl(var(--border)/0.4)] lg:min-h-screen lg:w-64 lg:gap-0 lg:p-5">
+    <aside className="fixed bottom-0 left-0 right-0 z-40 flex w-full max-h-[100dvh] flex-col gap-3 overflow-y-auto bg-card/80 p-3 shadow-[inset_0_1px_0_hsl(var(--border)/0.4)] lg:static lg:min-h-screen lg:w-64 lg:gap-0 lg:overflow-visible lg:p-5 lg:shadow-[inset_-1px_0_0_hsl(var(--border)/0.4)]">
       <div className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-foreground lg:mb-6 lg:text-sm">Admin</div>
 
       <nav className="flex flex-1 gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">

@@ -8,9 +8,9 @@ export default function AppShell() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="page-grid">
+      <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[240px_1fr]">
         <Sidebar onAuthClick={() => setAuthOpen(true)} />
-        <main className="content">
+        <main className="px-4 pt-4 pb-24 sm:px-6 sm:pt-5 sm:pb-12 lg:px-8 lg:py-6">
           <Outlet />
         </main>
       </div>

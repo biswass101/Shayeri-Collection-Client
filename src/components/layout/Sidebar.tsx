@@ -19,18 +19,24 @@ export default function Sidebar({ onAuthClick }: SidebarProps) {
   const adminItems = user?.role === "admin" ? [{ label: "Admin Panel", icon: Shield, to: "/admin" }] : [];
 
   return (
-    <aside className="sidebar">
-      <div className="sidebar-top">
-        <div className="brand">Sayeri</div>
+    <aside className="fixed bottom-0 left-0 right-0 z-40 flex h-auto w-full max-h-[100dvh] flex-col gap-3 self-start overflow-y-auto border-t border-border bg-background px-3 py-3 lg:sticky lg:top-0 lg:z-auto lg:h-screen lg:w-60 lg:gap-6 lg:overflow-visible lg:border-t-0 lg:border-b-0 lg:border-r lg:bg-secondary lg:px-5 lg:py-6">
+      <div className="flex items-center gap-3">
+        <div className="text-sm font-bold uppercase tracking-[0.4px] text-foreground lg:text-base">
+          Sayeri
+        </div>
       </div>
 
-      <nav className="sidebar-menu">
+      <nav className="flex w-full flex-row gap-2 overflow-x-auto pb-1 lg:flex-1 lg:flex-col lg:overflow-visible lg:pb-0">
         {menuItems.map(({ label, icon: Icon, to }) => (
           <NavLink
             key={label}
             to={to}
             className={({ isActive }) =>
-              `sidebar-item${isActive ? " sidebar-item-active" : ""}`
+              `flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition lg:w-full lg:gap-3 lg:text-sm ${
+                isActive
+                  ? "bg-foreground text-background"
+                  : "text-foreground hover:bg-accent"
+              }`
             }
           >
             <Icon size={18} />
@@ -42,7 +48,11 @@ export default function Sidebar({ onAuthClick }: SidebarProps) {
             key={label}
             to={to}
             className={({ isActive }) =>
-              `sidebar-item${isActive ? " sidebar-item-active" : ""}`
+              `flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition lg:w-full lg:gap-3 lg:text-sm ${
+                isActive
+                  ? "bg-foreground text-background"
+                  : "text-foreground hover:bg-accent"
+              }`
             }
           >
             <Icon size={18} />
@@ -51,7 +61,7 @@ export default function Sidebar({ onAuthClick }: SidebarProps) {
         ))}
       </nav>
 
-      <div className="mt-auto rounded-xl bg-background p-3 shadow-sm ring-1 ring-border/40">
+      <div className="mt-auto hidden rounded-xl bg-background p-3 shadow-sm ring-1 ring-border/40 lg:block">
         <div className="flex items-center gap-2">
           <div className="grid h-8 w-8 place-items-center rounded-full bg-foreground text-background">
             <User size={14} />

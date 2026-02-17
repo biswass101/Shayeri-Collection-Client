@@ -8,8 +8,11 @@ type VideoCardProps = {
 
 export default function VideoCard({ video, onSelect }: VideoCardProps) {
   return (
-    <Card className="video-card cursor-pointer min-h-[320px] overflow-hidden" onClick={() => onSelect(video)}>
-      <CardContent className="video-card-body flex h-full flex-col gap-3">
+    <Card
+      className="min-h-[320px] cursor-pointer overflow-hidden rounded-2xl"
+      onClick={() => onSelect(video)}
+    >
+      <CardContent className="flex h-full flex-col gap-3 p-3">
         <div className="relative h-40 w-full overflow-hidden rounded-xl bg-muted">
           {video.thumbnailUrl ? (
             <img
@@ -23,12 +26,14 @@ export default function VideoCard({ video, onSelect }: VideoCardProps) {
               {video.thumbnailLabel}
             </div>
           )}
-          <div className="video-duration">{video.duration}</div>
+          <div className="absolute bottom-2 right-2 rounded-md bg-foreground px-1.5 py-0.5 text-[10px] font-semibold text-background">
+            {video.duration}
+          </div>
         </div>
-        <div className="video-meta flex flex-1 flex-col min-h-0">
-          <h3 className="video-title truncate">{video.title}</h3>
-          <p className="video-subtitle truncate">{video.subtitle}</p>
-          <div className="video-stats mt-auto">
+        <div className="flex min-h-[100px] flex-1 flex-col rounded-xl bg-secondary p-3 shadow-[inset_0_0_0_1px_hsl(var(--border))]">
+          <h3 className="truncate text-sm font-semibold text-foreground">{video.title}</h3>
+          <p className="mt-2 truncate text-xs text-muted-foreground">{video.subtitle}</p>
+          <div className="mt-auto flex gap-2 text-[11px] text-muted-foreground">
             <span>{video.views}</span>
             <span>•</span>
             <span>{video.uploaded}</span>

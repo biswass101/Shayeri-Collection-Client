@@ -33,41 +33,44 @@ export default function VideoRoutePage() {
 }
 
 function VideoPlayerSkeleton() {
+  const skeletonClass =
+    "relative overflow-hidden bg-accent before:absolute before:inset-0 before:block before:content-[''] before:-translate-x-full before:bg-[linear-gradient(90deg,rgba(255,255,255,0)_0%,rgba(255,255,255,0.4)_50%,rgba(255,255,255,0)_100%)] before:animate-shimmer";
+
   return (
-    <div className="video-player-skeleton mt-6 space-y-6" aria-busy="true">
-      <div className="video-player-back skeleton" />
+    <div className="mt-6 space-y-6" aria-busy="true">
+      <div className={`${skeletonClass} h-7 w-28 rounded-full`} />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)]">
         <div className="space-y-5">
-          <div className="video-player-hero skeleton" />
+          <div className={`${skeletonClass} aspect-video w-full rounded-2xl`} />
 
-          <div className="video-player-meta-card">
-            <div className="video-player-title skeleton" />
-            <div className="video-player-subtitle skeleton" />
-            <div className="video-player-actions">
-              <div className="video-player-action skeleton" />
-              <div className="video-player-action skeleton" />
-              <div className="video-player-action skeleton" />
+          <div className="rounded-2xl border border-border bg-card p-4">
+            <div className={`${skeletonClass} h-4 w-[65%] rounded-full`} />
+            <div className={`${skeletonClass} mt-3 h-3 w-[45%] rounded-full`} />
+            <div className="mt-4 flex flex-wrap gap-2">
+              <div className={`${skeletonClass} h-9 w-28 rounded-full`} />
+              <div className={`${skeletonClass} h-9 w-28 rounded-full`} />
+              <div className={`${skeletonClass} h-9 w-28 rounded-full`} />
             </div>
           </div>
         </div>
 
-        <div className="video-player-comments">
-          <div className="video-player-comments-title skeleton" />
-          <div className="video-player-comment skeleton" />
-          <div className="video-player-comment skeleton" />
-          <div className="video-player-comment skeleton" />
+        <div className="rounded-2xl border border-border bg-card p-4">
+          <div className={`${skeletonClass} h-3 w-[40%] rounded-full`} />
+          <div className={`${skeletonClass} mt-4 h-14 rounded-xl`} />
+          <div className={`${skeletonClass} mt-3 h-14 rounded-xl`} />
+          <div className={`${skeletonClass} mt-3 h-14 rounded-xl`} />
         </div>
       </div>
 
-      <div className="video-player-more">
-        <div className="video-player-more-title skeleton" />
-        <div className="video-player-more-grid">
+      <div className="rounded-2xl border border-border bg-card p-4">
+        <div className={`${skeletonClass} h-3 w-[25%] rounded-full`} />
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {Array.from({ length: 5 }, (_, index) => (
-            <div key={`more-video-skeleton-${index}`} className="video-player-more-card">
-              <div className="video-player-more-thumb skeleton" />
-              <div className="video-player-more-line skeleton" />
-              <div className="video-player-more-line skeleton short" />
+            <div key={`more-video-skeleton-${index}`} className="rounded-xl border border-border bg-background p-3">
+              <div className={`${skeletonClass} h-20 w-full rounded-lg`} />
+              <div className={`${skeletonClass} mt-3 h-3 w-full rounded-full`} />
+              <div className={`${skeletonClass} mt-2 h-3 w-[70%] rounded-full`} />
             </div>
           ))}
         </div>

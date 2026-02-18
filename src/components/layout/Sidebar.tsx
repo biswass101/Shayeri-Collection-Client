@@ -24,8 +24,13 @@ export default function Sidebar({ onAuthClick }: SidebarProps) {
   return (
     <aside className="fixed bottom-0 left-0 right-0 z-40 flex h-auto w-full max-h-[100dvh] flex-col gap-3 self-start overflow-y-auto border-t border-border/60 bg-background/75 px-3 py-3 backdrop-blur-xl lg:sticky lg:top-0 lg:z-auto lg:h-screen lg:w-60 lg:gap-6 lg:overflow-visible lg:border-t-0 lg:border-b-0 lg:border-r lg:bg-secondary/75 lg:px-5 lg:py-6">
       <div className="flex items-center gap-3">
+        <img
+          src="/justEliaPic.jpg"
+          alt="Sayeri"
+          className="h-9 w-9 rounded-full object-cover"
+        />
         <div className="text-sm font-bold uppercase tracking-[0.4px] text-foreground lg:text-base">
-          Sayeri
+          Shayeri
         </div>
       </div>
 

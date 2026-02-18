@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Pencil, Plus, Search, Trash2, Upload, X } from "lucide-react";
+import { Loader2, Pencil, Plus, Search, Trash2, Upload, X } from "lucide-react";
 import { useDeleteVideoMutation, useUpdateVideoMutation, useUploadVideoMutation } from "@/features/admin/adminApi";
 import { useGetCategoriesQuery, useGetVideosQuery } from "@/features/home/homeApi";
 import { useToast } from "@/components/ui/use-toast";
@@ -256,8 +256,22 @@ export default function AdminVideosPage() {
                         }
                       }}
                     >
-                  {editingId ? <Pencil size={16} /> : <Upload size={16} />}
-                  {editingId ? "Save Changes" : "Upload Video"}
+                  {editingId ? (
+                    <>
+                      <Pencil size={16} />
+                      Save Changes
+                    </>
+                  ) : uploadState.isLoading ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <Upload size={16} />
+                      Upload Video
+                    </>
+                  )}
                 </Button>
                 <Button
                   variant="ghost"

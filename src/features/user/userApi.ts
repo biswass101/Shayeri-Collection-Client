@@ -7,11 +7,10 @@ export const userApi = baseApi.injectEndpoints({
       { success: boolean; data?: AuthUser },
       { id: string; name?: string; email?: string; avatarFile?: File | null }
     >({
-      query: ({ id, name, email, avatarFile }) => {
+      query: ({ id, name, avatarFile }) => {
         if (avatarFile) {
           const formData = new FormData();
           if (name) formData.append("name", name);
-          if (email) formData.append("email", email);
           formData.append("avatar", avatarFile);
           return {
             url: `/api/users/${id}`,
@@ -24,7 +23,6 @@ export const userApi = baseApi.injectEndpoints({
           method: "put",
           data: {
             ...(name ? { name } : {}),
-            ...(email ? { email } : {}),
           },
         };
       },

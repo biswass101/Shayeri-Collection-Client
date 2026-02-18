@@ -170,7 +170,7 @@ export default function AuthModal({ open, onClose, onAuthenticated }: AuthModalP
             </div>
           ) : null}
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full" loading={isLoading}>
             {mode === "signin" ? "Sign In" : "Create Account"}
           </Button>
         </form>

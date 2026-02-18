@@ -49,7 +49,7 @@ export default function AdminSidebar() {
           </div>
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold">{user?.name ?? "Admin"}</div>
-            <div className="text-xs text-muted-foreground">{user?.email}</div>
+            <div className="truncate text-xs text-muted-foreground">{user?.email}</div>
           </div>
         </div>
         {user ? (

@@ -233,7 +233,7 @@ export default function VideoPlayerPage({ video, isAuthenticated, onBack }: Vide
               onChange={(event) => setEditingBody(event.target.value)}
             />
             <div className="flex gap-2">
-              <Button type="submit" size="sm" disabled={updateCommentState.isLoading}>
+              <Button type="submit" size="sm" loading={updateCommentState.isLoading}>
                 Save
               </Button>
               <Button
@@ -268,7 +268,7 @@ export default function VideoPlayerPage({ video, isAuthenticated, onBack }: Vide
               onChange={(event) => setReplyBody(event.target.value)}
             />
             <div className="flex gap-2">
-              <Button type="submit" size="sm" disabled={addCommentState.isLoading}>
+              <Button type="submit" size="sm" loading={addCommentState.isLoading}>
                 Reply
               </Button>
               <Button
@@ -528,7 +528,7 @@ export default function VideoPlayerPage({ video, isAuthenticated, onBack }: Vide
                   value={commentBody}
                   onChange={(event) => setCommentBody(event.target.value)}
                 />
-                <Button type="submit" size="sm" className="w-full gap-2" disabled={addCommentState.isLoading}>
+                <Button type="submit" size="sm" className="w-full gap-2" loading={addCommentState.isLoading}>
                   <Send size={14} /> Post Comment
                 </Button>
               </form>

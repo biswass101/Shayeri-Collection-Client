@@ -78,8 +78,9 @@ export default function ProfileModal({ open, onClose }: ProfileModalProps) {
             <Input
               type="email"
               value={formState.email}
-              onChange={(event) => setFormState((prev) => ({ ...prev, email: event.target.value }))}
+              disabled
             />
+            <p className="text-xs text-muted-foreground">Email cannot be changed.</p>
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">Profile picture</label>

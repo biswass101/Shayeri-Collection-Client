@@ -7,11 +7,11 @@ export default function VideoRoutePage() {
   const { videoId } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useUI();
-  const { data: video, isLoading, isFetching } = useGetVideoByIdQuery(videoId ?? "", {
+  const { data: video, isLoading } = useGetVideoByIdQuery(videoId ?? "", {
     skip: !videoId,
   });
 
-  if (isLoading || isFetching) {
+  if (isLoading) {
     return <VideoPlayerSkeleton />;
   }
 
